@@ -91,78 +91,81 @@ def get_time(timedelta):
 	return min + sec
 	
 
-
-user_input = ''
-to_continue = 'y'
-guess_correct = False
-
-intro = '''
-Welcome to Definitely Not Wordle! The rules are similar to Wordle but it's not Wordle.
-Rules:
-- The program will randomly generate a 5-letter word
-- You have 6 chances to guess the word
-- After each guess, there'll be '+', '?', '-' printed out
-	- '+' means the letter you guessed is at the right place (there could be repeating letters per word!)
-	- '?' means the letter you guessed is in the word but it's not at the right place
-	- '-' means the letter you guessed isn't in the word
-- After finishing the round, the program (should) copy the results to your clipboard so 
-	you can just paste them into the slack channel if you'd like :)
-	- If it isn't copied to your clipboard you can still copy the results manually to share
-
-You can now press 'Enter' to continue
-'''
-print(intro)
-dummy = input()
-
-
-while to_continue.lower() == 'y':
-	user_tries = 0
+def play():
+	user_input = ''
+	to_continue = 'y'
 	guess_correct = False
-	keyboard = KEYBOARD
-	print('Your mystery word is now generating...')
-	generated_word = rand_word.get_random_word(hasDictionaryDef='true', excludePartOfSpeech='numbers', minLength=5, maxLength=5)
-	while not generated_word or not generated_word.isalpha():
+
+	intro = '''
+	Welcome to Definitely Not Wordle! The rules are similar to Wordle but it's not Wordle.
+	Rules:
+	- The program will randomly generate a 5-letter word
+	- You have 6 chances to guess the word
+	- After each guess, there'll be '+', '?', '-' printed out
+		- '+' means the letter you guessed is at the right place (there could be repeating letters per word!)
+		- '?' means the letter you guessed is in the word but it's not at the right place
+		- '-' means the letter you guessed isn't in the word
+	- After finishing the round, the program (should) copy the results to your clipboard so 
+		you can just paste them into the slack channel if you'd like :)
+		- If it isn't copied to your clipboard you can still copy the results manually to share
+
+	You can now press 'Enter' to continue
+	'''
+	print(intro)
+	dummy = input()
+
+
+	while to_continue.lower() == 'y':
+		user_tries = 0
+		guess_correct = False
+		keyboard = KEYBOARD
+		print('Your mystery word is now generating...')
 		generated_word = rand_word.get_random_word(hasDictionaryDef='true', excludePartOfSpeech='numbers', minLength=5, maxLength=5)
-	generated_word = generated_word.lower()
-	history = ['====HISTORY====', 'Word: ' + generated_word]
-	progress = []
-	emoji_results = ''
-	# print(generated_word)
-	print('Guess the wordle!')
-	start_time = datetime.now()
-	while user_tries < TRIES and not guess_correct:
-		while len(user_input) != 5:
-			print(f'Remaining tries: {TRIES - user_tries}')
-			user_input = input('> ')
-			if len(user_input) != 5:
-				print('Please enter words with 5 characters only')
-		formatted_guess, formatted_hints, emotes, guess_correct, keyboard = check_user_guess(user_input, generated_word, keyboard)
-		emoji_results += emotes + '\n'
-		user_input = ''
-		print(formatted_guess)
-		print(formatted_hints)
+		while not generated_word or not generated_word.isalpha():
+			generated_word = rand_word.get_random_word(hasDictionaryDef='true', excludePartOfSpeech='numbers', minLength=5, maxLength=5)
+		generated_word = generated_word.lower()
+		history = ['====HISTORY====', 'Word: ' + generated_word]
+		progress = []
+		emoji_results = ''
+		# print(generated_word)
+		print('Guess the wordle!')
+		start_time = datetime.now()
+		while user_tries < TRIES and not guess_correct:
+			while len(user_input) != 5:
+				print(f'Remaining tries: {TRIES - user_tries}')
+				user_input = input('> ')
+				if len(user_input) != 5:
+					print('Please enter words with 5 characters only')
+			formatted_guess, formatted_hints, emotes, guess_correct, keyboard = check_user_guess(user_input, generated_word, keyboard)
+			emoji_results += emotes + '\n'
+			user_input = ''
+			print(formatted_guess)
+			print(formatted_hints)
+			print(keyboard)
+			update_history(progress, formatted_guess, formatted_hints)
+			user_tries += 1
+		
+		end_time = datetime.now()
+		time_took = get_time(end_time - start_time)
+		
+		if guess_correct:
+			print(f'\nCograts! You guessed the word in {time_took} :)')
+		else:
+			print('\nMaybe you\'ll get it next time :)')
+		history[1] += f'  |  {user_tries} / {TRIES}'
+		for item in history:
+			print(item)
 		print(keyboard)
-		update_history(progress, formatted_guess, formatted_hints)
-		user_tries += 1
-	
-	end_time = datetime.now()
-	time_took = get_time(end_time - start_time)
-	
-	if guess_correct:
-		print(f'\nCograts! You guessed the word in {time_took} :)')
-	else:
-		print('\nMaybe you\'ll get it next time :)')
-	history[1] += f'  |  {user_tries} / {TRIES}'
-	for item in history:
-		print(item)
-	print(keyboard)
 
-	copy_cb = f'Wordle  - {generated_word}  |  {time_took}  |  {user_tries} / {TRIES}\n\n' + emoji_results
-	try:
-		import subprocess
-		subprocess.run("pbcopy", universal_newlines=True, input= copy_cb)
-	except:
-		pass
-	print(copy_cb)
+		copy_cb = f'Wordle  - {generated_word}  |  {time_took}  |  {user_tries} / {TRIES}\n\n' + emoji_results
+		try:
+			import subprocess
+			subprocess.run("pbcopy", universal_newlines=True, input= copy_cb)
+		except:
+			pass
+		print(copy_cb)
 
-	to_continue = input('\nDo you want to continue? Enter \'y\' to continue. Otherwise, enter any character to exit the program: ')
+		to_continue = input('\nDo you want to continue? Enter \'y\' to continue. Otherwise, enter any character to exit the program: ')
+	
+if __name__ == '__main__':
+	play()
