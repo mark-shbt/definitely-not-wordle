@@ -1,6 +1,7 @@
 from random_word import RandomWords
 from typing import Union
 from datetime import datetime
+import pyperclip
 
 TRIES = 6
 rand_word = RandomWords()
@@ -158,8 +159,7 @@ def play():
 
 		copy_cb = f'Wordle  - {generated_word}  |  {time_took}  |  {user_tries} / {TRIES}\n\n' + emoji_results
 		try:
-			import subprocess
-			subprocess.run("pbcopy", universal_newlines=True, input= copy_cb)
+			pyperclip.copy(copy_cb)
 		except:
 			pass
 		print(copy_cb)
