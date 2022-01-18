@@ -106,8 +106,7 @@ def play():
 		- '+' means the letter you guessed is at the right place (there could be repeating letters per word!)
 		- '?' means the letter you guessed is in the word but it's not at the right place
 		- '-' means the letter you guessed isn't in the word
-	- After finishing the round, the program will copy the results to your clipboard so 
-		you can just paste them into the slack channel if you'd like :)
+	- After finishing the round, the program will copy the results to your clipboard so you can just paste them into the slack channel if you'd like :)
 		- If it isn't copied to your clipboard you can still copy the results manually to share
 
 	Press anykey to continue
