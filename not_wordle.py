@@ -97,22 +97,21 @@ def play():
 	guess_correct = False
 
 	intro = '''
-	Welcome to Definitely Not Wordle! The rules are similar to Wordle but it's not Wordle.
+	Welcome to Definitely Not Wordle!
 	Rules:
 	- The program will randomly generate a 5-letter word
 	- You have 6 chances to guess the word
-	- After each guess, there'll be '+', '?', '-' printed out
+	- After each guess, there'll be a  keyboard with '+', '?', '-' printed out
 		- '+' means the letter you guessed is at the right place (there could be repeating letters per word!)
 		- '?' means the letter you guessed is in the word but it's not at the right place
 		- '-' means the letter you guessed isn't in the word
-	- After finishing the round, the program (should) copy the results to your clipboard so 
+	- After finishing the round, the program will copy the results to your clipboard so 
 		you can just paste them into the slack channel if you'd like :)
 		- If it isn't copied to your clipboard you can still copy the results manually to share
 
-	You can now press 'Enter' to continue
+	Press anykey to continue
 	'''
-	print(intro)
-	dummy = input()
+	dummy = input(intro + '\n')
 
 
 	while to_continue.lower() == 'y':
@@ -120,14 +119,14 @@ def play():
 		guess_correct = False
 		keyboard = KEYBOARD
 		print('Your mystery word is now generating...')
-		generated_word = rand_word.get_random_word(hasDictionaryDef='true', excludePartOfSpeech='numbers', minLength=5, maxLength=5)
+		generated_word = rand_word.get_random_word(hasDictionaryDef='true', includePartOfSpeech="noun,verb,adjective,adverb", minLength=5, maxLength=5)
 		while not generated_word or not generated_word.isalpha():
-			generated_word = rand_word.get_random_word(hasDictionaryDef='true', excludePartOfSpeech='numbers', minLength=5, maxLength=5)
+			generated_word = rand_word.get_random_word(hasDictionaryDef='true', includePartOfSpeech="noun,verb,adjective,adverb", minLength=5, maxLength=5)
 		generated_word = generated_word.lower()
 		history = ['====HISTORY====', 'Word: ' + generated_word]
 		progress = []
 		emoji_results = ''
-		# print(generated_word)
+		
 		print('Guess the wordle!')
 		start_time = datetime.now()
 		while user_tries < TRIES and not guess_correct:
